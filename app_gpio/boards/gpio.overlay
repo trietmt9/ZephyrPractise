@@ -1,0 +1,20 @@
+/{
+    aliases {
+        myled = &myled;
+		mybtn = &mybtn;
+    };
+
+    gpio_leds {
+		compatible = "gpio-leds";
+		myled: myled {
+    		gpios = <&gpioa 5 GPIO_ACTIVE_HIGH>;
+		};
+	};
+
+	gpio_btn{
+		compatible = "gpio-keys";
+		mybtn: mybtn{
+			gpios = <&gpioc 13 GPIO_ACTIVE_LOW>;
+		};
+	};
+};
