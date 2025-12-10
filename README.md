@@ -30,12 +30,26 @@ Each project has its own README with detailed instructions:
 
 ### System Requirements
 
-- **Operating System**: Linux (Ubuntu/Debian recommended), macOS, or Windows (WSL2)
-- **Python**: Version 3.8 or newer
+- **Operating System**: Linux (Ubuntu/Debian recommended), macOS 10.15+, or Windows 10/11
+- **Python**: Version 3.9 or newer
 - **Git**: For cloning repositories
-- **CMake**: Version 3.20.0 or newer
+- **CMake**: Version 3.20.5 or newer
+- **Disk Space**: At least 5 GB free
 
-### Install Dependencies (Ubuntu/Debian)
+---
+
+## Installing Zephyr RTOS
+
+Choose your operating system:
+- [Linux (Ubuntu/Debian)](#linux-installation)
+- [macOS](#macos-installation)
+- [Windows](#windows-installation)
+
+---
+
+## Linux Installation
+
+### Step 1: Install Dependencies (Ubuntu/Debian)
 
 ```bash
 sudo apt update
@@ -45,87 +59,308 @@ sudo apt install --no-install-recommends git cmake ninja-build gperf \
   make gcc gcc-multilib g++-multilib libsdl2-dev libmagic1
 ```
 
----
-
-## Installing Zephyr RTOS
-
-### Step 1: Install West (Zephyr's Meta-Tool)
+### Step 2: Install West and Create Virtual Environment
 
 ```bash
-pip3 install --user west
+# Install west
+pip3 install --user -U west
+
+# Add to PATH (add to ~/.bashrc)
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
+source ~/.bashrc
+
+# Create workspace directory
+mkdir -p ~/zephyrproject
+cd ~/zephyrproject
+
+# Create Python virtual environment
+python3 -m venv .venv
+source .venv/bin/activate
 ```
 
-Add west to your PATH (add to `~/.bashrc` or `~/.zshrc`):
+### Step 3: Initialize Zephyr Workspace
 
 ```bash
-export PATH="$HOME/.local/bin:$PATH"
+cd ~/zephyrproject
+west init
+west update
 ```
 
-Reload your shell:
+### Step 4: Install Python Dependencies
 
+```bash
+pip install -r zephyr/scripts/requirements.txt
+```
+
+### Step 5: Install Zephyr SDK
+
+```bash
+cd ~
+wget https://github.com/zephyrproject-rtos/sdk-ng/releases/download/v0.16.8/zephyr-sdk-0.16.8_linux-x86_64.tar.xz
+tar xf zephyr-sdk-0.16.8_linux-x86_64.tar.xz
+cd zephyr-sdk-0.16.8
+./setup.sh
+```
+
+### Step 6: Set Up Environment
+
+Add to `~/.bashrc`:
+
+```bash
+export ZEPHYR_BASE=~/zephyrproject/zephyr
+```
+
+Reload:
 ```bash
 source ~/.bashrc
 ```
 
-### Step 2: Initialize Zephyr Workspace
+### Step 7: Verify Installation
+
+```bash
+cd ~/zephyrproject
+source .venv/bin/activate
+source zephyr/zephyr-env.sh
+west build -p auto -b qemu_x86 zephyr/samples/hello_world
+west build -t run
+```
+
+---
+
+## macOS Installation
+
+### Step 1: Install Homebrew (if not installed)
+
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+
+### Step 2: Install Dependencies
+
+```bash
+brew install cmake ninja gperf python3 ccache qemu dtc wget libmagic
+```
+
+### Step 3: Install West and Create Virtual Environment
 
 ```bash
 # Create workspace directory
 mkdir -p ~/zephyrproject
 cd ~/zephyrproject
 
-# Initialize west workspace
-west init
+# Create Python virtual environment
+python3 -m venv .venv
+source .venv/bin/activate
 
-# Update all repositories
-west update
+# Install west
+pip install west
 ```
 
-### Step 3: Install Python Dependencies
+### Step 4: Initialize Zephyr Workspace
 
 ```bash
 cd ~/zephyrproject
-pip3 install -r zephyr/scripts/requirements.txt
+west init
+west update
 ```
 
-### Step 4: Install Zephyr SDK
+### Step 5: Install Python Dependencies
 
-Download and install the Zephyr SDK (toolchain):
+```bash
+pip install -r zephyr/scripts/requirements.txt
+```
+
+### Step 6: Install Zephyr SDK
 
 ```bash
 cd ~
-wget https://github.com/zephyrproject-rtos/sdk-ng/releases/download/v0.16.5/zephyr-sdk-0.16.5_linux-x86_64.tar.xz
-tar xf zephyr-sdk-0.16.5_linux-x86_64.tar.xz
-cd zephyr-sdk-0.16.5
+wget https://github.com/zephyrproject-rtos/sdk-ng/releases/download/v0.16.8/zephyr-sdk-0.16.8_macos-x86_64.tar.xz
+# For Apple Silicon (M1/M2/M3):
+# wget https://github.com/zephyrproject-rtos/sdk-ng/releases/download/v0.16.8/zephyr-sdk-0.16.8_macos-aarch64.tar.xz
+
+tar xf zephyr-sdk-0.16.8_macos-*.tar.xz
+cd zephyr-sdk-0.16.8
 ./setup.sh
 ```
 
-**Note**: Check [Zephyr SDK releases](https://github.com/zephyrproject-rtos/sdk-ng/releases) for the latest version.
+### Step 7: Set Up Environment
 
-### Step 5: Set Up Environment Variables
-
-Add to your `~/.bashrc` or `~/.zshrc`:
+Add to `~/.zshrc` (macOS default shell):
 
 ```bash
 export ZEPHYR_BASE=~/zephyrproject/zephyr
-export ZEPHYR_SDK_INSTALL_DIR=~/zephyr-sdk-0.16.5
 ```
 
-Reload your shell:
-
+Reload:
 ```bash
-source ~/.bashrc
+source ~/.zshrc
 ```
 
-### Step 6: Verify Installation
+### Step 8: Verify Installation
 
 ```bash
-cd ~/zephyrproject/zephyr
-west build -p auto -b qemu_x86 samples/hello_world
+cd ~/zephyrproject
+source .venv/bin/activate
+source zephyr/zephyr-env.sh
+west build -p auto -b qemu_x86 zephyr/samples/hello_world
 west build -t run
 ```
 
-If you see "Hello World!" output, Zephyr is successfully installed!
+---
+
+## Windows Installation
+
+### Method 1: Using WSL2 (Recommended)
+
+WSL2 provides the best compatibility and performance for Zephyr development on Windows.
+
+#### Step 1: Install WSL2
+
+Open PowerShell as Administrator:
+
+```powershell
+wsl --install -d Ubuntu
+```
+
+Restart your computer when prompted.
+
+#### Step 2: Open Ubuntu and Follow Linux Installation
+
+After restart, open Ubuntu from Start Menu and follow the [Linux Installation](#linux-installation) steps above.
+
+#### Step 3: Install USB/IP for Hardware Access (Optional)
+
+To access USB devices from WSL2:
+
+```bash
+# In WSL2 Ubuntu
+sudo apt install linux-tools-generic hwdata
+sudo update-alternatives --install /usr/local/bin/usbip usbip /usr/lib/linux-tools/*-generic/usbip 20
+```
+
+On Windows (PowerShell as Admin):
+```powershell
+winget install --interactive --exact dorssel.usbipd-win
+```
+
+Connect USB device:
+```powershell
+# In PowerShell (Admin)
+usbipd list
+usbipd bind --busid <BUSID>
+usbipd attach --wsl --busid <BUSID>
+```
+
+### Method 2: Native Windows Installation
+
+#### Step 1: Install Chocolatey Package Manager
+
+Open PowerShell as Administrator:
+
+```powershell
+Set-ExecutionPolicy Bypass -Scope Process -Force
+[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
+iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+```
+
+#### Step 2: Install Dependencies
+
+```powershell
+choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System' -y
+choco install ninja gperf python git dtc-msys2 wget 7zip -y
+```
+
+#### Step 3: Install West
+
+```powershell
+pip3 install -U west
+```
+
+#### Step 4: Initialize Zephyr Workspace
+
+```powershell
+cd %HOMEPATH%
+mkdir zephyrproject
+cd zephyrproject
+
+# Create virtual environment
+python -m venv .venv
+.venv\Scripts\activate.bat
+
+# Initialize workspace
+west init
+west update
+```
+
+#### Step 5: Install Python Dependencies
+
+```powershell
+cd %HOMEPATH%\zephyrproject
+pip install -r zephyr\scripts\requirements.txt
+```
+
+#### Step 6: Install Zephyr SDK
+
+Download from: https://github.com/zephyrproject-rtos/sdk-ng/releases/download/v0.16.8/zephyr-sdk-0.16.8_windows-x86_64.7z
+
+Extract to `C:\zephyr-sdk-0.16.8` and run `setup.cmd`
+
+#### Step 7: Set Environment Variables
+
+Add to System Environment Variables:
+- `ZEPHYR_BASE`: `%HOMEPATH%\zephyrproject\zephyr`
+
+#### Step 8: Verify Installation
+
+```powershell
+cd %HOMEPATH%\zephyrproject
+.venv\Scripts\activate.bat
+zephyr\zephyr-env.cmd
+west build -p auto -b qemu_x86 zephyr\samples\hello_world
+west build -t run
+```
+
+---
+
+## Quick Setup Summary
+
+### Every Terminal Session (All Platforms)
+
+Before building, activate the Zephyr environment:
+
+**Linux/macOS:**
+```bash
+cd ~/zephyrproject
+source .venv/bin/activate
+source zephyr/zephyr-env.sh
+```
+
+**Windows (Native):**
+```powershell
+cd %HOMEPATH%\zephyrproject
+.venv\Scripts\activate.bat
+zephyr\zephyr-env.cmd
+```
+
+**Pro Tip**: Create an alias (Linux/macOS in `~/.bashrc` or `~/.zshrc`):
+```bash
+alias zephyr-env='cd ~/zephyrproject && source .venv/bin/activate && source zephyr/zephyr-env.sh'
+```
+
+---
+
+## Verification Checklist
+
+After installation, verify everything works:
+
+- [ ] `west --version` shows version info
+- [ ] `cmake --version` shows 3.20.5 or newer
+- [ ] `python --version` shows 3.9 or newer
+- [ ] `$ZEPHYR_BASE` environment variable is set
+- [ ] Hello World sample builds and runs
+- [ ] Board can be flashed (if hardware connected)
+
+If you see "Hello World!" from the QEMU sample, you're ready to develop!
 
 ---
 
@@ -228,32 +463,168 @@ int main(void) {
 
 ---
 
-## Common Issues
+## Common Issues & Troubleshooting
 
-### "west: command not found"
+### All Platforms
 
-Make sure west is in your PATH:
+#### "west: command not found"
+
+**Linux/macOS:**
 ```bash
 export PATH="$HOME/.local/bin:$PATH"
+# Add to ~/.bashrc or ~/.zshrc permanently
 ```
 
-### "Could not find Zephyr"
+**Windows:**
+```powershell
+# Reinstall west or check PATH in System Environment Variables
+pip3 install --upgrade west
+```
+
+#### "Could not find Zephyr"
 
 Activate the Zephyr environment:
+
+**Linux/macOS:**
 ```bash
-source ~/zephyrproject/.venv/bin/activate
-source ~/zephyrproject/zephyr/zephyr-env.sh
-echo $ZEPHYR_BASE  # Should show /home/username/zephyrproject/zephyr
+cd ~/zephyrproject
+source .venv/bin/activate
+source zephyr/zephyr-env.sh
+echo $ZEPHYR_BASE  # Should show path to zephyr directory
 ```
 
-### Flash Permissions (Linux)
+**Windows:**
+```powershell
+cd %HOMEPATH%\zephyrproject
+.venv\Scripts\activate.bat
+zephyr\zephyr-env.cmd
+echo %ZEPHYR_BASE%
+```
 
-Add your user to the dialout group:
+#### Build Fails with "CMake Error"
+
+Clean the build directory:
+```bash
+rm -rf build
+west build -p auto -b <your_board> .
+```
+
+### Linux-Specific Issues
+
+#### Flash Permissions
+
+Add your user to dialout and plugdev groups:
 ```bash
 sudo usermod -a -G dialout $USER
+sudo usermod -a -G plugdev $USER
 ```
 
 Log out and back in for changes to take effect.
+
+#### ST-Link udev Rules
+
+If ST-Link isn't recognized:
+```bash
+sudo nano /etc/udev/rules.d/49-stlinkv2.rules
+```
+
+Add:
+```
+SUBSYSTEM=="usb", ATTRS{idVendor}=="0483", ATTRS{idProduct}=="3744", MODE="0666"
+SUBSYSTEM=="usb", ATTRS{idVendor}=="0483", ATTRS{idProduct}=="3748", MODE="0666"
+KERNEL=="ttyACM*", ATTRS{idVendor}=="0483", MODE="0666"
+```
+
+Reload rules:
+```bash
+sudo udevadm control --reload-rules
+sudo udevadm trigger
+```
+
+### macOS-Specific Issues
+
+#### "xcrun: error: invalid active developer path"
+
+Install Xcode Command Line Tools:
+```bash
+xcode-select --install
+```
+
+#### USB Device Not Found
+
+Check System Preferences → Security & Privacy → Privacy → USB
+
+Grant terminal access to USB devices.
+
+#### Homebrew Installation Issues
+
+Update Homebrew:
+```bash
+brew update
+brew upgrade
+```
+
+### Windows-Specific Issues
+
+#### WSL2 USB Device Not Visible
+
+Use usbipd to attach USB devices:
+```powershell
+# In PowerShell (Admin)
+usbipd list
+usbipd bind --busid <BUSID>
+usbipd attach --wsl --busid <BUSID>
+```
+
+#### Native Windows: "cmake not found"
+
+Ensure CMake is in PATH:
+```powershell
+# Reinstall with PATH option
+choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System' -y --force
+```
+
+Close and reopen PowerShell after installation.
+
+#### Python Virtual Environment Issues
+
+If `.venv\Scripts\activate.bat` fails:
+```powershell
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+```
+
+#### Long Path Issues
+
+Enable long path support:
+```powershell
+# In PowerShell (Admin)
+New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" -Name "LongPathsEnabled" -Value 1 -PropertyType DWORD -Force
+```
+
+### Board-Specific Issues
+
+#### STM32F411E-DISCO: No Virtual COM Port
+
+The STM32F411E-DISCO board does not have VCP support. Use:
+- External USB-to-UART adapter on PA2 (TX) / PA3 (RX)
+- Solder SB10 and SB11 bridges to enable USART2
+
+#### Serial Port Not Found
+
+**Linux:**
+```bash
+ls /dev/tty*
+# Look for /dev/ttyACM* or /dev/ttyUSB*
+```
+
+**macOS:**
+```bash
+ls /dev/cu.*
+# Look for /dev/cu.usbmodem* or /dev/cu.usbserial*
+```
+
+**Windows:**
+Check Device Manager → Ports (COM & LPT)
 
 ---
 
