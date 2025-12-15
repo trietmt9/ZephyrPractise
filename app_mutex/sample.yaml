@@ -1,0 +1,17 @@
+sample:
+  name: Kernel Mutex Example
+  description: Demonstrates mutex usage for protecting shared resources between threads
+tests:
+  sample.app.mutex:
+    tags:
+      - mutex
+      - threads
+      - kernel
+      - synchronization
+    harness: console
+    harness_config:
+      type: multi_line
+      regex:
+        - "Thread.*started"
+        - "Thread.*finished"
+        - "RACE CONDITION DETECTED|SUCCESS"
