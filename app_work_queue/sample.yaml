@@ -1,0 +1,21 @@
+sample:
+  name: Kernel Work Queue Example
+  description: Smart home controller demonstrating work queue usage for ISR deferral and background task processing
+tests:
+  sample.app.workqueue:
+    tags:
+      - workqueue
+      - threads
+      - kernel
+      - isr
+      - delayed_work
+    harness: console
+    harness_config:
+      type: multi_line
+      regex:
+        - "Work Queue Example"
+        - "Custom work queue started"
+        - "Button Handler:.*Button"
+        - "Upload Handler:.*Uploading.*sensor readings"
+        - "Status Check"
+        - "Demo events completed"
