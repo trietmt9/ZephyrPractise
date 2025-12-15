@@ -1,0 +1,13 @@
+sample:
+  name: Kernel Timer Example
+  description: Demonstrates Zephyr kernel timers for periodic tasks
+tests:
+  sample.app.timer:
+    tags:
+      - timer
+      - kernel
+    harness: console
+    harness_config:
+      type: multi_line
+      regex:
+        - "Timer"

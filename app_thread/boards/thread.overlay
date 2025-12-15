@@ -1,0 +1,14 @@
+/{
+    aliases{
+        led0 = &greenled;
+    };
+
+    leds{
+        compatiple="gpio-leds";
+
+        greenled:led0
+        {
+            gpios = <&gpioa 5 GPIO_ACTIVE_HIGH>;
+        };
+    };
+};

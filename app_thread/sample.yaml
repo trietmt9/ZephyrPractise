@@ -1,0 +1,17 @@
+sample:
+  name: Kernel Thread Example
+  description: Demonstrates creating and managing multiple Zephyr kernel threads
+tests:
+  sample.app.thread:
+    tags:
+      - threads
+      - kernel
+      - gpio
+      - LED
+    filter: dt_enabled_alias_with_parent_compat("led0", "gpio-leds")
+    depends_on: gpio
+    harness: console
+    harness_config:
+      type: multi_line
+      regex:
+        - "Message from log thread"

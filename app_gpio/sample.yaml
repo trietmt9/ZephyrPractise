@@ -1,0 +1,16 @@
+sample:
+  name: GPIO Control Example
+  description: GPIO example with LED control and button input with debouncing
+tests:
+  sample.app.gpio:
+    tags:
+      - gpio
+      - LED
+      - button
+    filter: dt_enabled_alias_with_parent_compat("myled", "gpio-leds") and dt_enabled_alias_with_parent_compat("mybtn", "gpio-keys")
+    depends_on: gpio
+    harness: console
+    harness_config:
+      type: multi_line
+      regex:
+        - "mode has changed"
