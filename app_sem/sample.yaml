@@ -1,0 +1,20 @@
+sample:
+  name: Kernel Semaphore Example
+  description: Demonstrates semaphore usage for signaling, resource management, and producer-consumer pattern
+tests:
+  sample.app.semaphore:
+    tags:
+      - semaphore
+      - threads
+      - kernel
+      - synchronization
+      - producer-consumer
+    harness: console
+    harness_config:
+      type: multi_line
+      regex:
+        - "Binary Semaphore.*Signaling"
+        - "Counting Semaphore.*Resource Pool"
+        - "Producer-Consumer Pattern"
+        - "Producer:.*item"
+        - "Consumer:.*item"
