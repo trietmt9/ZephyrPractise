@@ -1,0 +1,24 @@
+sample:
+  name: Kernel Message Queue Example
+  description: Environmental monitoring system demonstrating message queue usage for sensor data collection
+tests:
+  sample.app.msgqueue:
+    tags:
+      - msgqueue
+      - threads
+      - kernel
+      - synchronization
+      - sensors
+    harness: console
+    harness_config:
+      type: multi_line
+      regex:
+        - "Environmental Monitoring System"
+        - "Temperature sensor thread started"
+        - "Humidity sensor thread started"
+        - "Pressure sensor thread started"
+        - "Data logger thread started"
+        - "\\[LOG\\].*Temperature:.*°C"
+        - "\\[LOG\\].*Humidity:.*%"
+        - "\\[LOG\\].*Pressure:.*hPa"
+        - "Statistics.*Total processed"
