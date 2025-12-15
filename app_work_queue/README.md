@@ -335,19 +335,19 @@ This example implements a **Smart Home Controller** with:
 │                   EVENT SOURCES                     │
 ├─────────────────────────────────────────────────────┤
 │                                                     │
-│  Button ISRs        Sensor Readings   Timers       │
-│      │                    │              │         │
-│      │ k_work_submit()    │              │         │
-│      ▼                    ▼              ▼         │
-│  ┌────────────────────────────────────────────┐   │
-│  │         CUSTOM WORK QUEUE                  │   │
-│  │      (High Priority Thread)                │   │
-│  │                                            │   │
-│  │  ┌──────────┐  ┌──────────┐  ┌─────────┐  │   │
-│  │  │ Button   │  │ Sensor   │  │ Status  │  │   │
-│  │  │ Handler  │  │ Upload   │  │ Check   │  │   │
-│  │  └──────────┘  └──────────┘  └─────────┘  │   │
-│  └────────────────────────────────────────────┘   │
+│  Button ISRs        Sensor Readings   Timers        │
+│      │                    │              │          │
+│      │ k_work_submit()    │              │          │
+│      ▼                    ▼              ▼          │
+│  ┌────────────────────────────────────────────┐     │
+│  │         CUSTOM WORK QUEUE                  │     │
+│  │      (High Priority Thread)                │     │
+│  │                                            │     │
+│  │  ┌──────────┐  ┌──────────┐  ┌─────────┐   │     │
+│  │  │ Button   │  │ Sensor   │  │ Status  │   │     │
+│  │  │ Handler  │  │ Upload   │  │ Check   │   │     │
+│  │  └──────────┘  └──────────┘  └─────────┘   │     │
+│  └────────────────────────────────────────────┘     │
 │                                                     │
 └─────────────────────────────────────────────────────┘
          │              │               │
