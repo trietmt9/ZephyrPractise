@@ -1,0 +1,20 @@
+sample:
+  name: SPI with DMA Device Driver Example
+  description: Demonstrates high-performance SPI communication using DMA for efficient CPU-offloaded transfers, including synchronous and asynchronous operations with callbacks
+tests:
+  sample.app.spi_dma:
+    tags:
+      - spi
+      - dma
+      - driver
+      - communication
+      - async
+    filter: dt_nodelabel_enabled("spi1") and dt_nodelabel_enabled("dma2")
+    depends_on: spi dma
+    harness: console
+    harness_config:
+      type: multi_line
+      regex:
+        - "SPI DMA initialized successfully"
+        - "Sync transfer test passed"
+        - "Async transfer completed"

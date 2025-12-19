@@ -1,0 +1,7 @@
+cmake_minimum_required(VERSION 3.20.0)
+set(DTC_OVERLAY_FILE "boards/spi_dma.overlay")
+find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
+project(app_spi_dma)
+target_sources(app PRIVATE src/main.c)
+target_sources(app PRIVATE driver/src/spi_dma.c)
+target_include_directories(app PRIVATE driver/inc)
