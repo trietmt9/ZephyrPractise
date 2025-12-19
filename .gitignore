@@ -1,3 +1,5 @@
 zephyrproject/*
 .vscode
 */build/*
+.venv/
+.claude/
