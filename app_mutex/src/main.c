@@ -9,7 +9,7 @@ LOG_MODULE_REGISTER(app_mutex, LOG_LEVEL_INF);
 #define COORDINATOR_PRIO     4  /* Higher priority (lower number) */
 
 /* Number of increments each thread will perform */
-#define NUM_INCREMENTS  1000
+#define NUM_INCREMENTS  5000
 
 /* Shared resource - a counter */
 static volatile uint32_t shared_counter = 0;
@@ -61,7 +61,7 @@ void counter_thread(void *arg1, void *arg2, void *arg3)
         } else {
             /* CRITICAL SECTION - UNPROTECTED (Race Condition!) */
             uint32_t temp = shared_counter;
-            k_busy_wait(10);  /* Simulate some processing */
+            k_busy_wait(10);  /* Simulate some processing - longer delay increases race window */
             shared_counter = temp + 1;
             local_count++;
         }
@@ -75,7 +75,7 @@ void counter_thread(void *arg1, void *arg2, void *arg3)
  */
 void test_without_mutex(void)
 {
-    LOG_WRN("=== TEST 1: WITHOUT MUTEX (Race Condition) ===");
+    LOG_INF("=== TEST 1: WITHOUT MUTEX (Race Condition) ===");
 
     shared_counter = 0;
     use_mutex = false;
@@ -101,8 +101,8 @@ void test_without_mutex(void)
     k_thread_join(tid2, K_FOREVER);
     k_thread_join(tid3, K_FOREVER);
 
-    LOG_WRN("Expected counter value: %u", NUM_INCREMENTS * 3);
-    LOG_WRN("Actual counter value: %u", shared_counter);
+    LOG_INF("Expected counter value: %u", NUM_INCREMENTS * 3);
+    LOG_INF("Actual counter value: %u", shared_counter);
 
     if (shared_counter != NUM_INCREMENTS * 3) {
         LOG_ERR("RACE CONDITION DETECTED! Lost %u increments",
